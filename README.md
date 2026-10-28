@@ -2,6 +2,10 @@
 
 OmniDrop now has a real local-network transfer path. The Node server serves the page and brokers short-lived room signaling; file content is sent browser-to-browser over a WebRTC data channel. The server does not receive file chunks or write transfers to disk.
 
+## Live app
+
+[Open OmniDrop on Vercel](https://ignite-theta-murex.vercel.app/)
+
 ## Project workflow
 
 See [Project workflow and data flow](docs/PROJECT_WORKFLOW.md) for Mermaid flowcharts, sender/receiver sequence diagrams, data handling, security boundaries, and current transfer limits.
@@ -14,7 +18,7 @@ Requirements: Node.js 20 or newer. There are no npm dependencies. The app shell 
 npm start
 ```
 
-Open <http://localhost:4173> in two browser tabs. In one tab, choose a file and create a handoff. In the other, open **Receive**, enter the pairing code, compare the words, then accept. Files up to 50 MB are supported in this MVP. A SHA-256 check runs before the receiver can save the file.
+For local backend development, open <http://localhost:4173> in two browser tabs. In one tab, choose a file and create a handoff. In the other, open **Receive**, enter the pairing code, compare the words, then accept. Files up to 50 MB are supported in this MVP. A SHA-256 check runs before the receiver can save the file.
 
 ## Install as an app
 
