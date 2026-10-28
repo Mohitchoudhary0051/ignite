@@ -22,6 +22,19 @@ Serve OmniDrop from a trusted HTTPS address (or use localhost on the same comput
 
 The app shell is cached after the first successful load and can reopen offline. Nearby file transfers still need the signaling server running and both devices on the same LAN. Offline QR transfers need no network after both app pages are loaded, and support files up to 1 KB.
 
+## Backend service
+
+`server.mjs` serves the app and runs the WebSocket signaling service. It keeps temporary pairing rooms in memory, expires/revokes them, applies per-IP signaling limits, caps concurrent connections and active rooms, and pings idle WebSocket clients. File bytes stay in the browsers and are never uploaded to the backend. This is a single-instance service; room state is not shared between replicas.
+
+Run the backend in a container:
+
+```sh
+docker build -t omnidrop .
+docker run --rm -p 4173:4173 omnidrop
+```
+
+For a public HTTPS deployment, terminate TLS at a trusted reverse proxy that supports WebSocket upgrades on `/signal`. Set `TRUST_PROXY=true` only when that proxy overwrites `X-Forwarded-For`; otherwise all users behind a proxy may share one rate-limit bucket. Keep one backend instance until room signaling is moved to a shared broker. Configure `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` only when Node itself terminates TLS; both must be set together.
+
 ## Use a phone on the same Wi-Fi
 
 The phone and computer must reach the same host on the LAN. Browsers require a secure origin for the camera and Web Crypto, so use a trusted HTTPS certificate whose subject alternative names include the computer's LAN name/IP. Set `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` to that certificate and key before starting the server. Do not bypass browser certificate warnings. If the phone cannot trust the certificate, use localhost testing on the computer instead.

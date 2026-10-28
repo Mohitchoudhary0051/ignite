@@ -73,6 +73,8 @@ sequenceDiagram
 
 The server holds each active room in memory, allows one receiver, expires rooms after the selected lifetime, and closes both peers on expiry or revoke. Its signaling rate limit is 30 actions per IP per minute. The server sees pairing codes, signaling metadata, and peer network metadata; it does not receive the file chunks. No account or cloud file store is used.
 
+The backend caps the process at 1,000 active rooms and 2,000 WebSocket connections. It sends WebSocket pings every 25 seconds and releases clients that do not answer, so dead mobile connections do not keep rooms around until their full expiry. The `/health` endpoint reports service status, active-room count and uptime; it never reports file data.
+
 ## 4. Offline optical transfer: frame and data flow
 
 Both devices must first open the app over trusted HTTPS and keep the pages loaded. The sender selects a file up to 1 KB and creates a passphrase of at least eight characters. The passphrase must be shared separately; it is never embedded in the QR frames. The sender encrypts the file and metadata, then displays changing QR frames. The receiver scans the frames, reassembles the payload, decrypts it, and verifies the SHA-256 digest.
@@ -116,6 +118,8 @@ The scanner uses the browser's `BarcodeDetector` QR support. Frames repeat to he
 - One receiver can join each room. Rooms support the UI's 10-minute, 1-hour, or 24-hour choices and are held in server memory.
 - Offline optical file size: up to 1 KB. Camera QR support varies by browser; test the target phone and browser before relying on an air-gap transfer.
 - There is no native Wi-Fi Direct, multi-file transfer, transfer resume, account, or cloud storage.
+- Rooms, rate-limit counters, and live sockets exist in one Node process. Restarting it closes transfers; multiple server replicas will not share a room. A shared signaling broker is needed before horizontal scaling.
+- Behind a reverse proxy, enable `TRUST_PROXY=true` only when the trusted proxy overwrites `X-Forwarded-For`; otherwise the rate limiter uses the direct socket address.
 - Revoke and expiry close the live handoff but cannot remove a copy already saved by the receiver.
 - This is a prototype and has not had a production security review.
 
@@ -125,6 +129,7 @@ The scanner uses the browser's `BarcodeDetector` QR support. Frames repeat to he
 | --- | --- |
 | `index.html` | User interface, WebRTC pairing and transfer, QR encoding/decoding, encryption and integrity checks |
 | `server.mjs` | Static app server, health endpoint, WebSocket signaling rooms and room expiry |
+| `Dockerfile` | Small Node container image and `/health` container health check |
 | `app.js` | Install prompt, service-worker registration, local transfer history and diagnostics |
 | `sw.js` | Offline app-shell cache |
 | `manifest.webmanifest` | Install name, display mode, colors and app icons |
@@ -137,3 +142,5 @@ npm start
 ```
 
 Open `http://localhost:4173` in two tabs on one computer for a same-device demo. To use a phone, serve the app from a LAN host that the phone can reach over trusted HTTPS; set `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` to the certificate and key paths before starting the server. Do not bypass browser certificate warnings.
+
+For container deployment, run `docker build -t omnidrop .` and `docker run --rm -p 4173:4173 omnidrop`. A public reverse proxy must support WebSocket upgrades at `/signal`. Keep one backend instance while sessions are in-memory.
