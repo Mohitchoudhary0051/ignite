@@ -4,7 +4,7 @@ OmniDrop now has a real local-network transfer path. The Node server serves the 
 
 ## Run on one computer
 
-Requirements: Node.js 20 or newer. There are no npm dependencies.
+Requirements: Node.js 20 or newer. There are no npm dependencies. The app shell is installable and cached for offline opening after its first secure visit.
 
 ```sh
 npm start
@@ -23,7 +23,7 @@ Allow TCP port 4173 only on your private network. This build uses host ICE candi
 - Nearby-network WebRTC is implemented. Offline optical transfer is implemented for encrypted files up to 1 KB using animated QR frames with AES-GCM encryption and SHA-256 verification; Wi-Fi Direct is not available to browser apps.
 - Pairing rooms stay in server memory until the selected 10-minute, 1-hour, or 24-hour expiry. The server sees pairing codes, SDP/ICE signaling, and peer network metadata, but not file bytes.
 - WebRTC data channels use DTLS encryption. This is an early prototype, not a security-reviewed production service.
-- The server has basic per-IP signaling rate limits and one receiver per room. There is no TURN fallback, resume across reloads, multi-file transfer, or persistent transfer history.
+- The server has basic per-IP signaling rate limits and one receiver per room. There is no TURN fallback, resume across reloads, multi-file transfer, or Wi-Fi Direct. Recent transfer metadata is stored locally in the browser; file contents are not stored in history.
 - Clearing the OmniDrop session releases in-page data and closes the connection. It cannot remove files the recipient saved, screenshots, or operating-system/browser caches.
 
 ## Transfer with no network
