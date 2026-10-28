@@ -12,6 +12,12 @@ npm start
 
 Open <http://localhost:4173> in two browser tabs. In one tab, choose a file and create a handoff. In the other, open **Receive**, enter the pairing code, compare the words, then accept. Files up to 50 MB are supported in this MVP. A SHA-256 check runs before the receiver can save the file.
 
+## Install as an app
+
+Serve OmniDrop from a trusted HTTPS address (or use localhost on the same computer), then open it in the browser and choose **Install app**. The installed PWA opens in a standalone window on supported desktop browsers and Android. On iPhone/iPad, open the HTTPS address in Safari, tap **Share**, then **Add to Home Screen**. On browsers without an install prompt, use the browser menu's install or add-to-home-screen action.
+
+The app shell is cached after the first successful load and can reopen offline. Nearby file transfers still need the signaling server running and both devices on the same LAN. Offline QR transfers need no network after both app pages are loaded, and support files up to 1 KB.
+
 ## Use a phone on the same Wi-Fi
 
 The phone and computer must reach the same host on the LAN. Browsers require a secure origin for the camera and Web Crypto, so use a trusted HTTPS certificate whose subject alternative names include the computer's LAN name/IP. Set `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` to that certificate and key before starting the server. Do not bypass browser certificate warnings. If the phone cannot trust the certificate, use localhost testing on the computer instead.

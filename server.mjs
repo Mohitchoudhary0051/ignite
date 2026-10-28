@@ -117,9 +117,9 @@ function attachWebSocket(server) {
 }
 const publicFiles = new Map([
   ['/','index.html'], ['/index.html','index.html'], ['/app.js','app.js'],
-  ['/sw.js','sw.js'], ['/manifest.webmanifest','manifest.webmanifest'], ['/icon.svg','icon.svg']
+  ['/sw.js','sw.js'], ['/manifest.webmanifest','manifest.webmanifest'], ['/icon.svg','icon.svg'], ['/icon-192.png','icon-192.png'], ['/icon-512.png','icon-512.png']
 ]);
-const mimeTypes = { 'index.html':'text/html; charset=utf-8', 'app.js':'text/javascript; charset=utf-8', 'sw.js':'text/javascript; charset=utf-8', 'manifest.webmanifest':'application/manifest+json; charset=utf-8', 'icon.svg':'image/svg+xml' };
+const mimeTypes = { 'index.html':'text/html; charset=utf-8', 'app.js':'text/javascript; charset=utf-8', 'sw.js':'text/javascript; charset=utf-8', 'manifest.webmanifest':'application/manifest+json; charset=utf-8', 'icon.svg':'image/svg+xml', 'icon-192.png':'image/png', 'icon-512.png':'image/png' };
 function serve(req, res) {
   const url = new URL(req.url, 'http://localhost');
   if (url.pathname === '/health') { res.writeHead(200, {'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify({ok:true,signaling:'memory-only'}));return; }
