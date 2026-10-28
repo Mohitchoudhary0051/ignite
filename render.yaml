@@ -7,6 +7,7 @@ services:
     buildCommand: echo "No external packages required"
     startCommand: npm start
     healthCheckPath: /health
+    autoDeployTrigger: off
     envVars:
       - key: ALLOWED_ORIGINS
         value: https://ignite-theta-murex.vercel.app
