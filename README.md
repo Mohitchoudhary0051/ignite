@@ -39,7 +39,7 @@ docker run --rm -p 4173:4173 omnidrop
 
 For a public HTTPS deployment, terminate TLS at a trusted reverse proxy that supports WebSocket upgrades on `/signal`. Set `TRUST_PROXY=true` only when that proxy overwrites `X-Forwarded-For`; otherwise all users behind a proxy may share one rate-limit bucket. Keep one backend instance until room signaling is moved to a shared broker. Configure `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` only when Node itself terminates TLS; both must be set together.
 
-Vercel uses the root `server.ts` entry point and `vercel.json` enables Fluid compute. Vercel room state is still held in process memory, so use one instance for the prototype; add a shared Redis-backed signaling store before scaling to multiple instances.
+Vercel is configured to build the root `Dockerfile` with its Container runtime. Room state is still held in process memory, so use one instance for the prototype; add a shared Redis-backed signaling store before scaling to multiple instances.
 
 ## Use a phone on the same Wi-Fi
 

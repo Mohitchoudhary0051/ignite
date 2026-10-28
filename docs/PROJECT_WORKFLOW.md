@@ -145,4 +145,4 @@ Open `http://localhost:4173` in two tabs on one computer for a same-device demo.
 
 For container deployment, run `docker build -t omnidrop .` and `docker run --rm -p 4173:4173 omnidrop`. A public reverse proxy must support WebSocket upgrades at `/signal`. Keep one backend instance while sessions are in-memory.
 
-Vercel deploys the root `server.ts` Node-server entry point; `vercel.json` enables Fluid compute for its WebSocket service. Pairing state is currently process-local. Before scaling Vercel to multiple server instances, move room creation, lookup, and signaling relay to a shared Redis-backed broker so the sender and receiver can connect through different instances.
+Vercel is configured to build the root `Dockerfile` with its Container runtime. Pairing state is currently process-local. Before scaling Vercel to multiple server instances, move room creation, lookup, and signaling relay to a shared Redis-backed broker so the sender and receiver can connect through different instances.
