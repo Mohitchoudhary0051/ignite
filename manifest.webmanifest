@@ -1,0 +1,13 @@
+{
+  "id": "/",
+  "name": "OmniDrop — private nearby file sharing",
+  "short_name": "OmniDrop",
+  "description": "Nearby WebRTC file sharing and encrypted offline QR handoff.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f3ed",
+  "theme_color": "#f5f3ed",
+  "orientation": "portrait-primary",
+  "icons": [{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
