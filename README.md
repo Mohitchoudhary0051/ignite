@@ -18,7 +18,7 @@ Requirements: Node.js 20 or newer. There are no npm dependencies. The app shell 
 npm start
 ```
 
-For local backend development, open <http://localhost:4173> in two browser tabs. In one tab, choose a file and create a handoff. In the other, open **Receive**, enter the pairing code, compare the words, then accept. Files up to 50 MB are supported in this MVP. A SHA-256 check runs before the receiver can save the file.
+For local backend development, open <http://localhost:4173/?signal=local> in two browser tabs. The `?signal=local` flag sends signaling to the local Node server. Without that flag, all devices use the shared Render signaling service, including a desktop opened on localhost, so its pairing room is visible to a phone on the deployed app. In one tab, choose a file and create a handoff. In the other, open **Receive**, enter the pairing code, compare the words, then accept. Files up to 50 MB are supported in this MVP. A SHA-256 check runs before the receiver can save the file.
 
 ## Install as an app
 
