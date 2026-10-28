@@ -2,6 +2,10 @@
 
 OmniDrop now has a real local-network transfer path. The Node server serves the page and brokers short-lived room signaling; file content is sent browser-to-browser over a WebRTC data channel. The server does not receive file chunks or write transfers to disk.
 
+## Project workflow
+
+See [Project workflow and data flow](docs/PROJECT_WORKFLOW.md) for Mermaid flowcharts, sender/receiver sequence diagrams, data handling, security boundaries, and current transfer limits.
+
 ## Run on one computer
 
 Requirements: Node.js 20 or newer. There are no npm dependencies. The app shell is installable and cached for offline opening after its first secure visit.
