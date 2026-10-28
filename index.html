@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5f3ed"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="OmniDrop"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png"><script>(()=>{const local=["localhost","127.0.0.1"].includes(location.hostname),base=local?`${location.protocol==="https:"?"wss":"ws"}://${location.host}`:"wss://omnidrop-mohitchoudhary0051.onrender.com";window.OMNIDROP_SIGNAL_URL=base+"/signal";window.OMNIDROP_HEALTH_URL=base.replace(/^ws/,"http")+"/health"})()</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5f3ed"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="OmniDrop"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png"><script>(()=>{const local=new URLSearchParams(location.search).get("signal")==="local",base=local?`${location.protocol==="https:"?"wss":"ws"}://${location.host}`:"wss://omnidrop-mohitchoudhary0051.onrender.com";window.OMNIDROP_SIGNAL_URL=base+"/signal";window.OMNIDROP_HEALTH_URL=base.replace(/^ws/,"http")+"/health"})()</script>
 <title>OmniDrop — private, nearby file sharing</title>
 <style>
 
