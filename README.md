@@ -45,7 +45,7 @@ Vercel is configured to build the root `Dockerfile` with its Container runtime. 
 
 The phone and computer must reach the same host on the LAN. Browsers require a secure origin for the camera and Web Crypto, so use a trusted HTTPS certificate whose subject alternative names include the computer's LAN name/IP. Set `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` to that certificate and key before starting the server. Do not bypass browser certificate warnings. If the phone cannot trust the certificate, use localhost testing on the computer instead.
 
-Allow TCP port 4173 only on your private network. This build uses host ICE candidates and no STUN/TURN service; it is intended for devices on the same LAN. Restrictive Wi-Fi client isolation can prevent peers from connecting.
+Allow TCP port 4173 only on your private network. WebRTC uses Google's public STUN service to discover direct peer routes; file data still travels directly between devices. There is no TURN relay, so restrictive NATs, firewalls, or Wi-Fi client isolation can still prevent peers from connecting. Keep both devices on the same Wi-Fi for this prototype.
 
 ## Current boundaries
 
