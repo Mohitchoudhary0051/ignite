@@ -30,6 +30,8 @@ The app shell is cached after the first successful load and can reopen offline. 
 
 The frontend stays on Vercel. Pairing needs the separate Render service because Vercel instances do not share this in-memory signaling room.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FMohitchoudhary0051%2Fignite)
+
 1. Open the [Render dashboard](https://dashboard.render.com/), choose **New → Blueprint**, and connect the `Mohitchoudhary0051/ignite` GitHub repository.
 2. Render reads `render.yaml` and creates the `omnidrop-mohitchoudhary0051` Node web service in Singapore. Keep it at one instance.
 3. Wait for the Render deployment to become live, then open <https://omnidrop-mohitchoudhary0051.onrender.com/health>. It should return JSON with `"ok":true`.
