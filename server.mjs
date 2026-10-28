@@ -15,7 +15,14 @@ const maxRooms = 1000;
 const maxConnections = 2000;
 const maxRateBuckets = 10000;
 const sockets = new Set();
+const allowedOrigins = new Set((process.env.ALLOWED_ORIGINS || '').split(',').map(value => value.trim()).filter(Boolean));
 const symbols = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+function originAllowed(origin, host) {
+  if (!origin) return true;
+  try { const parsed = new URL(origin); return parsed.host === host || allowedOrigins.has(parsed.origin); }
+  catch { return false; }
+}
 
 function clientIp(req) {
   const forwarded = process.env.TRUST_PROXY === 'true' ? req.headers['x-forwarded-for'] : '';
@@ -109,10 +116,9 @@ function routeMessage(ws, message) {
 function attachWebSocket(server) {
   server.on('upgrade', (req, socket) => {
     const origin = req.headers.origin;
-    let originAllowed = true;
-    if (origin) { try { originAllowed = new URL(origin).host === req.headers.host; } catch { originAllowed = false; } }
+    const allowed = originAllowed(origin, req.headers.host);
     const ip = clientIp(req);
-    if (!originAllowed || req.method !== 'GET' || req.url !== '/signal' || sockets.size >= maxConnections || !rateAllowed(ip)) { socket.destroy(); return; }
+    if (!allowed || req.method !== 'GET' || req.url !== '/signal' || sockets.size >= maxConnections || !rateAllowed(ip)) { socket.destroy(); return; }
     const key = req.headers['sec-websocket-key'];
     const keyBytes = key ? Buffer.from(key, 'base64') : Buffer.alloc(0);
     if (!key || keyBytes.length !== 16 || req.headers['sec-websocket-version'] !== '13' || req.headers.upgrade?.toLowerCase() !== 'websocket' || !req.headers.connection?.toLowerCase().split(/,\s*/).includes('upgrade')) { socket.destroy(); return; }
@@ -162,7 +168,7 @@ const mimeTypes = { 'index.html':'text/html; charset=utf-8', 'app.js':'text/java
 function serve(req, res) {
   const url = new URL(req.url, 'http://localhost');
   if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405, {'allow':'GET, HEAD','x-content-type-options':'nosniff'});res.end('Method not allowed');return; }
-  if (url.pathname === '/health') { res.writeHead(200, {'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff'});const body=JSON.stringify({ok:true,service:'omnidrop',signaling:'memory-only',activeRooms:rooms.size,uptimeSeconds:Math.floor(process.uptime())});res.end(req.method==='HEAD'?'':body);return; }
+  if (url.pathname === '/health') { const headers={'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff','vary':'Origin'};if(req.headers.origin&&originAllowed(req.headers.origin,req.headers.host))headers['access-control-allow-origin']=req.headers.origin;res.writeHead(200,headers);const body=JSON.stringify({ok:true,service:'omnidrop',signaling:'single-instance',activeRooms:rooms.size,uptimeSeconds:Math.floor(process.uptime())});res.end(req.method==='HEAD'?'':body);return; }
   const requested = publicFiles.get(url.pathname);
   if (!requested) { res.writeHead(404, {'x-content-type-options':'nosniff'});res.end('Not found');return; }
   const cacheControl = ['sw.js','index.html'].includes(requested) ? 'no-cache' : 'public, max-age=300, must-revalidate';
