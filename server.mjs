@@ -115,13 +115,18 @@ function attachWebSocket(server) {
     socket.on('error', () => {});
   });
 }
+const publicFiles = new Map([
+  ['/','index.html'], ['/index.html','index.html'], ['/app.js','app.js'],
+  ['/sw.js','sw.js'], ['/manifest.webmanifest','manifest.webmanifest'], ['/icon.svg','icon.svg']
+]);
+const mimeTypes = { 'index.html':'text/html; charset=utf-8', 'app.js':'text/javascript; charset=utf-8', 'sw.js':'text/javascript; charset=utf-8', 'manifest.webmanifest':'application/manifest+json; charset=utf-8', 'icon.svg':'image/svg+xml' };
 function serve(req, res) {
   const url = new URL(req.url, 'http://localhost');
   if (url.pathname === '/health') { res.writeHead(200, {'content-type':'application/json','cache-control':'no-store'});res.end(JSON.stringify({ok:true,signaling:'memory-only'}));return; }
-  const requested = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
-  if (requested !== 'index.html') { res.writeHead(404);res.end('Not found');return; }
-  res.writeHead(200, {'content-type':'text/html; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'});
-  fs.createReadStream(path.join(root,'index.html')).pipe(res);
+  const requested = publicFiles.get(url.pathname);
+  if (!requested) { res.writeHead(404, {'x-content-type-options':'nosniff'});res.end('Not found');return; }
+  res.writeHead(200, {'content-type':mimeTypes[requested],'cache-control':requested==='sw.js'?'no-cache':'no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer','service-worker-allowed':'/'});
+  fs.createReadStream(path.join(root,requested)).pipe(res);
 }
 const cert=process.env.OMNIDROP_TLS_CERT, key=process.env.OMNIDROP_TLS_KEY;
 const server=cert&&key?https.createServer({cert:fs.readFileSync(cert),key:fs.readFileSync(key)},serve):http.createServer(serve);
