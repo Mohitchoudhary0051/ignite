@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: omnidrop-mohitchoudhary0051
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: echo "No external packages required"
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: https://ignite-theta-murex.vercel.app
