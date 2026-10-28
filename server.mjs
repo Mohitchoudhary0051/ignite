@@ -178,7 +178,10 @@ const server=cert&&key?https.createServer({cert:fs.readFileSync(cert),key:fs.rea
 attachWebSocket(server);
 const port=Number(process.env.PORT||4173), host=process.env.HOST||'0.0.0.0';
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be an integer from 1 to 65535.');
-server.listen(port,host,()=>console.log(`OmniDrop signaling ready at ${cert&&key?'https':'http'}://${host}:${port} (files never pass through this server)`));
+server.on('listening',()=>console.log(`OmniDrop signaling ready at ${cert&&key?'https':'http'} (files never pass through this server)`));
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) server.listen(port,host);
+export { server, port, host };
 
 function shutdown(signal) {
   console.log(`OmniDrop shutting down (${signal}).`);
