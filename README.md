@@ -1,6 +1,6 @@
 # OmniDrop prototype
 
-OmniDrop now has a real local-network transfer path. The Node server serves the page and brokers short-lived room signaling; file content is sent browser-to-browser over a WebRTC data channel. The server does not receive file chunks or write transfers to disk.
+OmniDrop serves its web app from Vercel and uses a persistent Node WebSocket service on Render for short-lived room signaling. File content travels directly browser-to-browser over a WebRTC data channel; the signaling server never receives file chunks or writes transfers to disk.
 
 ## Live app
 
@@ -26,9 +26,20 @@ Serve OmniDrop from a trusted HTTPS address (or use localhost on the same comput
 
 The app shell is cached after the first successful load and can reopen offline. Nearby file transfers still need the signaling server running and both devices on the same LAN. Offline QR transfers need no network after both app pages are loaded, and support files up to 1 KB.
 
+## Deploy the signaling backend
+
+The frontend stays on Vercel. Pairing needs the separate Render service because Vercel instances do not share this in-memory signaling room.
+
+1. Open the [Render dashboard](https://dashboard.render.com/), choose **New → Blueprint**, and connect the `Mohitchoudhary0051/ignite` GitHub repository.
+2. Render reads `render.yaml` and creates the `omnidrop-mohitchoudhary0051` Node web service in Singapore. Keep it at one instance.
+3. Wait for the Render deployment to become live, then open <https://omnidrop-mohitchoudhary0051.onrender.com/health>. It should return JSON with `"ok":true`.
+4. Open the Vercel app on both devices, refresh it, and keep them on the same Wi-Fi. If you use a different Vercel domain, update the Render `ALLOWED_ORIGINS` environment variable to that exact origin.
+
+The Render free service may take about a minute to wake after 15 minutes without traffic. Active pairing connections send WebSocket heartbeats during a transfer.
+
 ## Backend service
 
-`server.mjs` serves the app and runs the WebSocket signaling service. It keeps temporary pairing rooms in memory, expires/revokes them, applies per-IP signaling limits, caps concurrent connections and active rooms, and pings idle WebSocket clients. File bytes stay in the browsers and are never uploaded to the backend. This is a single-instance service; room state is not shared between replicas.
+`server.mjs` serves the app and runs the WebSocket signaling service. It keeps temporary pairing rooms in process memory, expires/revokes them, applies per-IP signaling limits, caps concurrent connections and active rooms, and pings idle WebSocket clients. File bytes stay in the browsers and are never uploaded to the backend. Keep this Render service at one instance because pairing state is held in memory.
 
 Run the backend in a container:
 
@@ -39,7 +50,7 @@ docker run --rm -p 4173:4173 omnidrop
 
 For a public HTTPS deployment, terminate TLS at a trusted reverse proxy that supports WebSocket upgrades on `/signal`. Set `TRUST_PROXY=true` only when that proxy overwrites `X-Forwarded-For`; otherwise all users behind a proxy may share one rate-limit bucket. Keep one backend instance until room signaling is moved to a shared broker. Configure `OMNIDROP_TLS_CERT` and `OMNIDROP_TLS_KEY` only when Node itself terminates TLS; both must be set together.
 
-Vercel is configured to build the root `Dockerfile` with its Container runtime. Room state is still held in process memory, so use one instance for the prototype; add a shared Redis-backed signaling store before scaling to multiple instances.
+The root `render.yaml` defines the signaling service in Singapore. Render accepts the WebSocket connections and keeps the room state in one long-lived Node process. The Vercel site connects to `wss://omnidrop-mohitchoudhary0051.onrender.com/signal`.
 
 ## Use a phone on the same Wi-Fi
 
